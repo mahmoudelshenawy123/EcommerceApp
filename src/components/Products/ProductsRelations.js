@@ -8,11 +8,10 @@ module.exports = async (Models) => {
     as: 'category',
   });
   Models.Products.belongsToMany(Models.Orders, {
-    through: Models.OrderProducts, // Reference the join table model
-    foreignKey: 'product_id', // Foreign key for Products in OrderProducts
-    otherKey: 'order_id', // Foreign key for Orders in OrderProducts
-    as: 'orders', // Alias for usage
+    through: Models.OrderProducts,
+    foreignKey: 'product_id',
+    otherKey: 'order_id',
+    as: 'orders',
   });
   await Models.Products.sync({ alter: true });
-  // await Models.Providers.sync({ alter: true });
 };

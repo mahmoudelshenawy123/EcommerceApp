@@ -1,13 +1,10 @@
-const jwt = require('jsonwebtoken');
-const { logger } = require('../../config/logger');
+const { LogInfo } = require('@src/helper/HelperFunctions');
 
-const { Models } = require('../../config/Models');
-const { PaginateSchema } = require('../../helper/HelperFunctions');
+const { Models } = require('@src/config/Models');
+const { PaginateSchema } = require('@src/helper/HelperFunctions');
 
 exports.getProduct = async (req, res) => {
   try {
-    // const token = req?.headers?.authorization?.split(' ')?.[1];
-    // const authedUser = jwt.decode(token);
     const { id } = req.params;
     const product = await Models.Products.findByPk(id, {
       include: [
@@ -26,12 +23,8 @@ exports.getProduct = async (req, res) => {
       ...product.toJSON(),
       main_image: product?.getMainImageWithBaseUrl(req),
       images: product?.getImagesWithBaseUrl(req),
-      // stories: user?.stories?.map((story) => ({
-      //   ...story.toJSON(),
-      //   image: story?.getImageWithBaseUrl(req),
-      // })),
     };
-    logger.info('--------- End Get All Products Successfully -----------');
+    LogInfo('--------- End Get All Products Successfully -----------');
     return sendedObject;
   } catch (err) {
     console.log(err);
@@ -65,7 +58,7 @@ exports.getAllItems = async (req, res) => {
         images: product?.getImagesWithBaseUrl(req),
       };
     });
-    logger.info('--------- End Get All Products Successfully -----------');
+    LogInfo('--------- End Get All Products Successfully -----------');
     return sendedObject;
   } catch (err) {
     console.log(err);
@@ -80,12 +73,11 @@ exports.getAllItemsWithPagination = async (req, res) => {
     const pageNo = Number(page) - 1 || 0;
     const itemPerPage = Number(limit) || 10;
     const offset = pageNo * itemPerPage;
-    // const count = await GetCagtegoriesCount();
 
     const query = {};
     if (name) query.name = name;
 
-    logger.info('--------- Start Get All Products -----------');
+    LogInfo('--------- Start Get All Products -----------');
     const products = await Models.Products.findAndCountAll({
       where: query,
       limit,

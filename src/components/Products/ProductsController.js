@@ -1,19 +1,8 @@
-const jwt = require('jsonwebtoken');
-const { logger } = require('../../config/logger');
-
-const { Models } = require('../../config/Models');
-const { Services } = require('../../config/Services');
-
-const {
-  ErrorHandler,
-  // CheckValidIdObject,
-} = require('../../helper/ErrorHandler');
-const {
-  ResponseSchema,
-  PaginateSchema,
-  // PaginateSchema,
-} = require('../../helper/HelperFunctions');
-// const UsersServices = require('./UsersServices');
+const { LogInfo, LogError } = require('@src/helper/HelperFunctions');
+const { Models } = require('@src/config/Models');
+const { Services } = require('@src/config/Services');
+const { ErrorHandler } = require('@src/helper/ErrorHandler');
+const { ResponseSchema } = require('@src/helper/HelperFunctions');
 
 exports.createProduct = async (req, res) => {
   try {
@@ -21,7 +10,7 @@ exports.createProduct = async (req, res) => {
       req.body;
     const { main_image, images } = req.files;
 
-    logger.info('--------- Start Add Product -----------');
+    LogInfo('--------- Start Add Product -----------');
     const product = await Models.Products.create({
       title,
       description,
@@ -32,17 +21,13 @@ exports.createProduct = async (req, res) => {
       images: images?.map((image) => image?.filename),
       main_image: main_image ? main_image?.[0]?.filename : null,
     });
-    // const provider = await Models.Providers.findByPk(provider_id);
-    // provider.addProducts(product);
-    logger.info('--------- End Add Product -----------');
+    LogInfo('--------- End Add Product -----------');
     return res
       .status(201)
       .json(ResponseSchema('Product Added Successfully', true, product));
   } catch (err) {
     console.log(err);
-    logger.error(
-      `---------- Error On Add Product Due To: ${err} -------------`,
-    );
+    LogError(`---------- Error On Add Product Due To: ${err} -------------`);
     return res
       .status(400)
       .json(
@@ -68,7 +53,7 @@ exports.updateProduct = async (req, res) => {
     } = req.body;
     const { main_image, images } = req.files;
 
-    logger.info('--------- Start Update Product -----------');
+    LogInfo('--------- Start Update Product -----------');
     const product = await Models.Products.update(
       {
         title,
@@ -83,15 +68,13 @@ exports.updateProduct = async (req, res) => {
         where: { id },
       },
     );
-    logger.info('--------- End Update Product -----------');
+    LogInfo('--------- End Update Product -----------');
     return res
       .status(201)
       .json(ResponseSchema('Product Updated Successfully', true, product));
   } catch (err) {
     console.log(err);
-    logger.error(
-      `---------- Error On Update User Due To: ${err} -------------`,
-    );
+    LogError(`---------- Error On Update User Due To: ${err} -------------`);
     return res
       .status(400)
       .json(
@@ -106,35 +89,31 @@ exports.updateProduct = async (req, res) => {
 
 exports.getAllItems = async (req, res) => {
   try {
-    logger.info('--------- Start Get All Products -----------');
+    LogInfo('--------- Start Get All Products -----------');
     const sendedObject = await Services?.Products?.getAllItems(req);
 
-    logger.info('--------- End Get All Products Successfully -----------');
+    LogInfo('--------- End Get All Products Successfully -----------');
     return res.status(201).json(ResponseSchema('Products', true, sendedObject));
   } catch (err) {
     console.log(err);
-    logger.error(
-      `---------- Error On Products File Due To: ${err} -------------`,
-    );
-    return res.status(400).json(
-      ResponseSchema(
-        `Somethings Went wrong Due To :${err.message}`,
-        false,
-        // ErrorHandler(err),
-      ),
-    );
+    LogError(`---------- Error On Products File Due To: ${err} -------------`);
+    return res
+      .status(400)
+      .json(
+        ResponseSchema(`Somethings Went wrong Due To :${err.message}`, false),
+      );
   }
 };
 
 exports.getProduct = async (req, res) => {
   try {
-    logger.info('--------- Start Get Product -----------');
+    LogInfo('--------- Start Get Product -----------');
     const sendedObject = await Services?.Products?.getProduct(req);
-    logger.info('--------- End Get Product Successfully -----------');
+    LogInfo('--------- End Get Product Successfully -----------');
     return res.status(201).json(ResponseSchema('Product', true, sendedObject));
   } catch (err) {
     console.log(err);
-    logger.error(`---------- Error On Product Due To: ${err} -------------`);
+    LogError(`---------- Error On Product Due To: ${err} -------------`);
     return res
       .status(400)
       .json(
@@ -147,39 +126,33 @@ exports.getAllItemsWithPagination = async (req, res) => {
   try {
     const sendedObject =
       await Services?.Products?.getAllItemsWithPagination(req);
-    logger.info('--------- End Get All Products Successfully -----------');
+    LogInfo('--------- End Get All Products Successfully -----------');
     return res.status(201).json(ResponseSchema('Products', true, sendedObject));
   } catch (err) {
     console.log(err);
-    logger.error(
-      `---------- Error On Products File Due To: ${err} -------------`,
-    );
-    return res.status(400).json(
-      ResponseSchema(
-        `Somethings Went wrong Due To :${err.message}`,
-        false,
-        // ErrorHandler(err),
-      ),
-    );
+    LogError(`---------- Error On Products File Due To: ${err} -------------`);
+    return res
+      .status(400)
+      .json(
+        ResponseSchema(`Somethings Went wrong Due To :${err.message}`, false),
+      );
   }
 };
 
 exports.deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    logger.info('--------- Start Delete Product -----------');
+    LogInfo('--------- Start Delete Product -----------');
     await Models.Products.destroy({
       where: { id },
     });
-    logger.info('--------- End Delete Product -----------');
+    LogInfo('--------- End Delete Product -----------');
     return res
       .status(201)
       .json(ResponseSchema('Product Deleted Successfully', true));
   } catch (err) {
     console.log(err);
-    logger.error(
-      `---------- Error On Delete Product Due To: ${err} -------------`,
-    );
+    LogError(`---------- Error On Delete Product Due To: ${err} -------------`);
     return res
       .status(400)
       .json(

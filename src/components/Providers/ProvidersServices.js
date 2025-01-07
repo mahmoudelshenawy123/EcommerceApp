@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken');
-const { logger } = require('../../config/logger');
+const { LogInfo, LogError } = require('@src/helper/HelperFunctions');
 
-const { Models } = require('../../config/Models');
-const { PaginateSchema } = require('../../helper/HelperFunctions');
+const { Models } = require('@src/config/Models');
+const { PaginateSchema } = require('@src/helper/HelperFunctions');
 
 exports.getSingleItem = async (req, res) => {
   try {
@@ -30,7 +30,7 @@ exports.getSingleItem = async (req, res) => {
         image: story?.getImageWithBaseUrl(req),
       })),
     };
-    logger.info('--------- End Get All Providers Successfully -----------');
+    LogInfo('--------- End Get All Providers Successfully -----------');
     return sendedObject;
   } catch (err) {
     console.log(err);
@@ -72,7 +72,7 @@ exports.getAllItems = async (req, res) => {
         })),
       };
     });
-    logger.info('--------- End Get All Providers Successfully -----------');
+    LogInfo('--------- End Get All Providers Successfully -----------');
     return sendedObject;
   } catch (err) {
     console.log(err);
@@ -87,12 +87,11 @@ exports.getAllItemsWithPagination = async (req, res) => {
     const pageNo = Number(page) - 1 || 0;
     const itemPerPage = Number(limit) || 10;
     const offset = pageNo * itemPerPage;
-    // const count = await GetCagtegoriesCount();
 
     const query = {};
     if (name) query.name = name;
 
-    logger.info('--------- Start Get All Providers -----------');
+    LogInfo('--------- Start Get All Providers -----------');
     const providers = await Models.Providers.findAndCountAll({
       where: query,
       limit,
@@ -121,17 +120,17 @@ exports.addStory = async (req, res) => {
     const authedUser = jwt.decode(token);
     const storyImage = req.file;
 
-    logger.info('--------- Start Add Story -----------');
+    LogInfo('--------- Start Add Story -----------');
     const story = await Models.ProvidersStories.create({
       provider_id: authedUser?.user_id,
       title,
       image: storyImage ? storyImage.filename : null,
     });
-    logger.info('--------- End Add Story -----------');
+    LogInfo('--------- End Add Story -----------');
     return story;
   } catch (err) {
     console.log(err);
-    logger.error(`---------- Error On Add Story Due To: ${err} -------------`);
+    LogError(`---------- Error On Add Story Due To: ${err} -------------`);
     throw new Error(`Error On Add Story Due To: ${err}`);
   }
 };

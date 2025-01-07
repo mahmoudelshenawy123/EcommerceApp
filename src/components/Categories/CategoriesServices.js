@@ -1,13 +1,9 @@
-const jwt = require('jsonwebtoken');
-const { logger } = require('../../config/logger');
-
-const { Models } = require('../../config/Models');
-const { PaginateSchema } = require('../../helper/HelperFunctions');
+const { LogInfo } = require('@src/helper/HelperFunctions');
+const { Models } = require('@src/config/Models');
+const { PaginateSchema } = require('@src/helper/HelperFunctions');
 
 exports.getCategory = async (req, res) => {
   try {
-    // const token = req?.headers?.authorization?.split(' ')?.[1];
-    // const authedUser = jwt.decode(token);
     const { id } = req.params;
     const category = await Models.Categories.findByPk(id, {
       include: [
@@ -21,12 +17,8 @@ exports.getCategory = async (req, res) => {
     const sendedObject = {
       ...category.toJSON(),
       image: category?.getImageWithBaseUrl(req),
-      // stories: user?.stories?.map((story) => ({
-      //   ...story.toJSON(),
-      //   image: story?.getImageWithBaseUrl(req),
-      // })),
     };
-    logger.info('--------- End Get All Categories Successfully -----------');
+    LogInfo('--------- End Get All Categories Successfully -----------');
     return sendedObject;
   } catch (err) {
     console.log(err);
@@ -59,7 +51,7 @@ exports.getAllItems = async (req, res) => {
         image: category.getImageWithBaseUrl(req),
       };
     });
-    logger.info('--------- End Get All Categories Successfully -----------');
+    LogInfo('--------- End Get All Categories Successfully -----------');
     return sendedObject;
   } catch (err) {
     console.log(err);
@@ -79,7 +71,7 @@ exports.getAllItemsWithPagination = async (req, res) => {
     const query = {};
     if (name) query.name = name;
 
-    logger.info('--------- Start Get All Categories -----------');
+    LogInfo('--------- Start Get All Categories -----------');
     const categories = await Models.Categories.findAndCountAll({
       where: query,
       limit,

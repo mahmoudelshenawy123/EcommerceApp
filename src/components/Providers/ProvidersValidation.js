@@ -1,16 +1,16 @@
 const Joi = require('joi');
-const { fileValidationSchema } = require('../../helper/HelperFunctions');
+const { FileValidationSchema } = require('@src/helper/HelperFunctions');
 
 module.exports.createProvider = Joi.object({
   first_name: Joi.string().min(3).max(50).required(),
   email: Joi.string().email().required(),
   last_name: Joi.string().min(3).max(50).required(),
   phone_number: Joi.string().alphanum().required(),
-  // image: fileValidationSchema.required(),
+  // image: FileValidationSchema.required(),
   categories: Joi.array().items(Joi.string()).min(1).required(),
   images: Joi.object({
-    main_image: Joi.array().items(fileValidationSchema).min(1).required(),
-    images: Joi.array().items(fileValidationSchema).min(1).required(),
+    main_image: Joi.array().items(FileValidationSchema).min(1).required(),
+    images: Joi.array().items(FileValidationSchema).min(1).required(),
   }),
   password: Joi.string().min(6).required(),
   current_longitude: Joi.string().required(),
@@ -23,24 +23,14 @@ module.exports.updateProvider = Joi.object({
   last_name: Joi.string().min(3).max(50).required(),
   phone_number: Joi.string().alphanum().required(),
   categories: Joi.array().items(Joi.string()).min(1).required(),
-  // image: Joi.alternatives()
-  //   .try(
-  //     Joi.string(), // Accepts a string representation (e.g., a URL)
-  //     fileValidationSchema, // Accepts a file object
-  //   )
-  //   .optional(),
-  // images: Joi.alternatives().try(
-  //   Joi.array().items(Joi.string()).optional(), // Accepts an array of URLs
-  //   Joi.array().items(fileValidationSchema).optional(), // Accepts an array of file objects
-  // ),
   images: Joi.object({
     main_image: Joi.alternatives().try(
-      Joi.array().items(Joi.string()).optional(), // Accepts an array of URLs
-      Joi.array().items(fileValidationSchema).optional(), // Accepts an array of file objects
+      Joi.array().items(Joi.string()).optional(),
+      Joi.array().items(FileValidationSchema).optional(),
     ),
     images: Joi.alternatives().try(
-      Joi.array().items(Joi.string()).optional(), // Accepts an array of URLs
-      Joi.array().items(fileValidationSchema).optional(), // Accepts an array of file objects
+      Joi.array().items(Joi.string()).optional(),
+      Joi.array().items(FileValidationSchema).optional(),
     ),
   }),
   // .optional(),
@@ -55,6 +45,6 @@ module.exports.loginProvider = Joi.object({
 });
 
 module.exports.addStory = Joi.object({
-  image: fileValidationSchema.required(),
+  image: FileValidationSchema.required(),
   title: Joi.string().optional(),
 });

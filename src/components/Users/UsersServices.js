@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken');
-const { logger } = require('../../config/logger');
 
-const { Models } = require('../../config/Models');
-const { PaginateSchema } = require('../../helper/HelperFunctions');
+const { Models } = require('@src/config/Models');
+const { PaginateSchema } = require('@src/helper/HelperFunctions');
+const { LogInfo, LogError } = require('@src/helper/HelperFunctions');
 
 exports.getUser = async (req, res) => {
   try {
@@ -25,7 +25,7 @@ exports.getUser = async (req, res) => {
         image: story?.getImageWithBaseUrl(req),
       })),
     };
-    logger.info('--------- End Get All Users Successfully -----------');
+    LogInfo('--------- End Get All Users Successfully -----------');
     return sendedObject;
   } catch (err) {
     console.log(err);
@@ -54,7 +54,7 @@ exports.getAllUsers = async (req, res) => {
         image: user.getImageWithBaseUrl(req),
       };
     });
-    logger.info('--------- End Get All Users Successfully -----------');
+    LogInfo('--------- End Get All Users Successfully -----------');
     return sendedObject;
   } catch (err) {
     console.log(err);
@@ -74,7 +74,7 @@ exports.getAllUsersWithPagination = async (req, res) => {
     const query = {};
     if (name) query.name = name;
 
-    logger.info('--------- Start Get All Users -----------');
+    LogInfo('--------- Start Get All Users -----------');
     const users = await Models.User.findAndCountAll({
       where: query,
       limit,
@@ -102,17 +102,17 @@ exports.addStory = async (req, res) => {
     const authedUser = jwt.decode(token);
     const storyImage = req.file;
 
-    logger.info('--------- Start Add Story -----------');
+    LogInfo('--------- Start Add Story -----------');
     const story = await Models.Stories.create({
       user_id: authedUser?.user_id,
       title,
       image: storyImage ? storyImage.filename : null,
     });
-    logger.info('--------- End Add Story -----------');
+    LogInfo('--------- End Add Story -----------');
     return story;
   } catch (err) {
     console.log(err);
-    logger.error(`---------- Error On Add Story Due To: ${err} -------------`);
+    LogError(`---------- Error On Add Story Due To: ${err} -------------`);
     throw new Error(`Error On Add Story Due To: ${err}`);
   }
 };

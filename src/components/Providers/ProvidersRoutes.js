@@ -2,17 +2,17 @@ const express = require('express');
 
 const router = express.Router();
 const multer = require('multer');
-const ProvidersController = require('./ProvidersController');
 const {
   validateRequest,
   ResponseSchema,
-} = require('../../helper/HelperFunctions');
-const ProvidersValidation = require('./ProvidersValidation');
-const authJwt = require('../../middleware/auth');
+} = require('@src/helper/HelperFunctions');
+const authJwt = require('@src/middleware/auth');
 const {
   checkisUserAdmin,
   checkisProvider,
-} = require('../../middleware/authMiddlewares');
+} = require('@src/middleware/authMiddlewares');
+const ProvidersController = require('./ProvidersController');
+const ProvidersValidation = require('./ProvidersValidation');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -20,7 +20,6 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const savedFileName = `${file.fieldname}-provider-${Date.now()}-${Math.round(Math.random() * 1e9)}-${file.originalname}`;
-
     cb(null, savedFileName);
   },
 });
@@ -31,9 +30,6 @@ const upload = multer({
   { name: 'images', maxCount: 10 },
   { name: 'main_image', maxCount: 1 },
 ]);
-// const upload = multer({
-//   storage,
-// }).single('image');
 
 function uploadModififed(req, res, next) {
   upload(req, res, (err) => {

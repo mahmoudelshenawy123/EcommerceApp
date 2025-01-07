@@ -1,19 +1,9 @@
-const { Sequelize } = require('sequelize');
-const { logger } = require('../../config/logger');
+const { LogInfo, LogError } = require('@src/helper/HelperFunctions');
 
-const { Models } = require('../../config/Models');
-const { Services } = require('../../config/Services');
-
-const {
-  ErrorHandler,
-  // CheckValidIdObject,
-} = require('../../helper/ErrorHandler');
-const {
-  ResponseSchema,
-  PaginateSchema,
-  // PaginateSchema,
-} = require('../../helper/HelperFunctions');
-// const UsersServices = require('./UsersServices');
+const { Models } = require('@src/config/Models');
+const { Services } = require('@src/config/Services');
+const { ErrorHandler } = require('@src/helper/ErrorHandler');
+const { ResponseSchema } = require('@src/helper/HelperFunctions');
 
 exports.createOrder = async (req, res) => {
   try {
@@ -29,7 +19,7 @@ exports.createOrder = async (req, res) => {
       products = [],
     } = req.body;
 
-    logger.info('--------- Start Add Order -----------');
+    LogInfo('--------- Start Add Order -----------');
     const order = await Models.Orders.create({
       user_id,
       order_latitude,
@@ -45,13 +35,13 @@ exports.createOrder = async (req, res) => {
         through: { quantity: productItem?.quantity },
       });
     }
-    logger.info('--------- End Add Order -----------');
+    LogInfo('--------- End Add Order -----------');
     return res
       .status(201)
       .json(ResponseSchema('Order Added Successfully', true, order));
   } catch (err) {
     console.log(err);
-    logger.error(`---------- Error On Add Order Due To: ${err} -------------`);
+    LogError(`---------- Error On Add Order Due To: ${err} -------------`);
     return res
       .status(400)
       .json(
@@ -69,22 +59,20 @@ exports.updateOrderStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    logger.info('--------- Start Update Order -----------');
+    LogInfo('--------- Start Update Order -----------');
     const order = await Models.Orders.update(
       { status },
       {
         where: { id },
       },
     );
-    logger.info('--------- End Update Order -----------');
+    LogInfo('--------- End Update Order -----------');
     return res
       .status(201)
       .json(ResponseSchema('Order Updated Successfully', true, order));
   } catch (err) {
     console.log(err);
-    logger.error(
-      `---------- Error On Update User Due To: ${err} -------------`,
-    );
+    LogError(`---------- Error On Update User Due To: ${err} -------------`);
     return res
       .status(400)
       .json(
@@ -99,35 +87,31 @@ exports.updateOrderStatus = async (req, res) => {
 
 exports.getAllItems = async (req, res) => {
   try {
-    logger.info('--------- Start Get All Orders -----------');
+    LogInfo('--------- Start Get All Orders -----------');
     const sendedObject = await Services?.Orders?.getAllItems(req);
 
-    logger.info('--------- End Get All Orders Successfully -----------');
+    LogInfo('--------- End Get All Orders Successfully -----------');
     return res.status(201).json(ResponseSchema('Orders', true, sendedObject));
   } catch (err) {
     console.log(err);
-    logger.error(
-      `---------- Error On Orders File Due To: ${err} -------------`,
-    );
-    return res.status(400).json(
-      ResponseSchema(
-        `Somethings Went wrong Due To :${err.message}`,
-        false,
-        // ErrorHandler(err),
-      ),
-    );
+    LogError(`---------- Error On Orders File Due To: ${err} -------------`);
+    return res
+      .status(400)
+      .json(
+        ResponseSchema(`Somethings Went wrong Due To :${err.message}`, false),
+      );
   }
 };
 
 exports.getSingleItem = async (req, res) => {
   try {
-    logger.info('--------- Start Get Order -----------');
+    LogInfo('--------- Start Get Order -----------');
     const sendedObject = await Services?.Orders?.getSingleItem(req);
-    logger.info('--------- End Get Order Successfully -----------');
+    LogInfo('--------- End Get Order Successfully -----------');
     return res.status(201).json(ResponseSchema('Order', true, sendedObject));
   } catch (err) {
     console.log(err);
-    logger.error(`---------- Error On Order Due To: ${err} -------------`);
+    LogError(`---------- Error On Order Due To: ${err} -------------`);
     return res
       .status(400)
       .json(
@@ -139,39 +123,33 @@ exports.getSingleItem = async (req, res) => {
 exports.getAllItemsWithPagination = async (req, res) => {
   try {
     const sendedObject = await Services?.Orders?.getAllItemsWithPagination(req);
-    logger.info('--------- End Get All Orders Successfully -----------');
+    LogInfo('--------- End Get All Orders Successfully -----------');
     return res.status(201).json(ResponseSchema('Orders', true, sendedObject));
   } catch (err) {
     console.log(err);
-    logger.error(
-      `---------- Error On Orders File Due To: ${err} -------------`,
-    );
-    return res.status(400).json(
-      ResponseSchema(
-        `Somethings Went wrong Due To :${err.message}`,
-        false,
-        // ErrorHandler(err),
-      ),
-    );
+    LogError(`---------- Error On Orders File Due To: ${err} -------------`);
+    return res
+      .status(400)
+      .json(
+        ResponseSchema(`Somethings Went wrong Due To :${err.message}`, false),
+      );
   }
 };
 
 exports.deleteItem = async (req, res) => {
   try {
     const { id } = req.params;
-    logger.info('--------- Start Delete Order -----------');
+    LogInfo('--------- Start Delete Order -----------');
     await Models.Orders.destroy({
       where: { id },
     });
-    logger.info('--------- End Delete Order -----------');
+    LogInfo('--------- End Delete Order -----------');
     return res
       .status(201)
       .json(ResponseSchema('Order Deleted Successfully', true));
   } catch (err) {
     console.log(err);
-    logger.error(
-      `---------- Error On Delete Order Due To: ${err} -------------`,
-    );
+    LogError(`---------- Error On Delete Order Due To: ${err} -------------`);
     return res
       .status(400)
       .json(

@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const { logger } = require('@src/config/logger');
 
 function PaginateSchema(currentPage, pages, count, data) {
   return {
@@ -25,19 +26,16 @@ function SplitImageLink(req, imageLink) {
 }
 const validateRequest = (schema) => {
   return (req, res, next) => {
-    // Combine body and file for validation
     const imageObj = req.file ? { image: req.file } : {};
     const imagesObj = req.files ? { images: req.files } : {};
     const combinedData = {
       ...req.body,
-      ...imageObj, // Add file to the validation data
-      ...imagesObj, // Add files to the validation data
+      ...imageObj,
+      ...imagesObj,
     };
 
-    // Validate the combined data
     const { error } = schema.validate(combinedData, { abortEarly: false });
     if (error) {
-      // Format the errors
       const errors = {};
       error.details.forEach((detail) => {
         errors[detail.path[0]] = detail.message;
@@ -54,21 +52,33 @@ const validateRequest = (schema) => {
   };
 };
 // File validation schema
-const fileValidationSchema = Joi.object({
-  destination: Joi.string().required(), // Ensure destination is a valid string
-  encoding: Joi.string().valid('7bit', '8bit').required(), // Validate encoding
-  fieldname: Joi.string().required(), // Fieldname should match your upload field (e.g., 'image')
-  filename: Joi.string().required(), // Filename must be present
-  mimetype: Joi.string().valid('image/png', 'image/jpeg').required(), // Allow only specific MIME types
-  originalname: Joi.string().required(), // Ensure originalname is a valid string
-  path: Joi.string().required(), // Path to uploaded file
+const FileValidationSchema = Joi.object({
+  destination: Joi.string().required(),
+  encoding: Joi.string().valid('7bit', '8bit').required(),
+  fieldname: Joi.string().required(),
+  filename: Joi.string().required(),
+  mimetype: Joi.string().valid('image/png', 'image/jpeg').required(),
+  originalname: Joi.string().required(),
+  path: Joi.string().required(),
   size: Joi.number()
     .max(1024 * 1024 * 5)
-    .required(), // File size <= 5MB
+    .required(),
 });
 
+const LogInfo = (message) =>
+  logger.info(`------------ ${message} ------------`);
+
+const LogError = (message) =>
+  logger.error(`------------ ${message} ------------`);
+
+const LogWarn = (message) =>
+  logger.warn(`------------ ${message} ------------`);
+
 module.exports = {
-  fileValidationSchema,
+  FileValidationSchema,
+  LogInfo,
+  LogError,
+  LogWarn,
   validateRequest,
   ResponseSchema,
   PaginateSchema,

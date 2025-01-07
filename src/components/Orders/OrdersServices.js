@@ -1,7 +1,7 @@
-const { logger } = require('../../config/logger');
+const { LogInfo } = require('@src/helper/HelperFunctions');
 
-const { Models } = require('../../config/Models');
-const { PaginateSchema } = require('../../helper/HelperFunctions');
+const { Models } = require('@src/config/Models');
+const { PaginateSchema } = require('@src/helper/HelperFunctions');
 
 exports.getSingleItem = async (req, res) => {
   try {
@@ -45,7 +45,7 @@ exports.getSingleItem = async (req, res) => {
         images: product?.getImagesWithBaseUrl(req),
       })),
     };
-    logger.info('--------- End Get All Orders Successfully -----------');
+    LogInfo('--------- End Get All Orders Successfully -----------');
     return sendedObject;
   } catch (err) {
     console.log(err);
@@ -97,7 +97,7 @@ exports.getAllItems = async (req, res) => {
         })),
       };
     });
-    logger.info('--------- End Get All Orders Successfully -----------');
+    LogInfo('--------- End Get All Orders Successfully -----------');
     return sendedObject;
   } catch (err) {
     console.log(err);
@@ -117,7 +117,7 @@ exports.getAllItemsWithPagination = async (req, res) => {
     const query = {};
     if (status) query.status = status;
 
-    logger.info('--------- Start Get All Orders -----------');
+    LogInfo('--------- Start Get All Orders -----------');
     const orders = await Models.Orders.findAndCountAll({
       where: query,
       limit,

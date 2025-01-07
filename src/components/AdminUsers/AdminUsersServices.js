@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken');
-const { logger } = require('../../config/logger');
+const { LogInfo } = require('@src/helper/HelperFunctions');
 
-const { Models } = require('../../config/Models');
-const { PaginateSchema } = require('../../helper/HelperFunctions');
+const { Models } = require('@src/config/Models');
+const { PaginateSchema } = require('@src/helper/HelperFunctions');
 
 exports.getUser = async (req, res) => {
   try {
@@ -14,7 +14,7 @@ exports.getUser = async (req, res) => {
       ...user?.toJSON(),
       image: user?.getImageWithBaseUrl(req),
     };
-    logger.info('--------- End Get All Users Successfully -----------');
+    LogInfo('--------- End Get All Users Successfully -----------');
     return sendedObject;
   } catch (err) {
     console.log(err);
@@ -43,7 +43,7 @@ exports.getAllUsers = async (req, res) => {
         image: user.getImageWithBaseUrl(req),
       };
     });
-    logger.info('--------- End Get All Users Successfully -----------');
+    LogInfo('--------- End Get All Users Successfully -----------');
     return sendedObject;
   } catch (err) {
     console.log(err);
@@ -63,7 +63,7 @@ exports.getAllUsersWithPagination = async (req, res) => {
     const query = {};
     if (name) query.name = name;
 
-    logger.info('--------- Start Get All Users -----------');
+    LogInfo('--------- Start Get All Users -----------');
     const users = await Models.AdminUsers.findAndCountAll({
       where: query,
       limit,

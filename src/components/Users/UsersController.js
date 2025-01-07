@@ -1,26 +1,18 @@
-const jwt = require('jsonwebtoken');
-const { logger } = require('../../config/logger');
+const { logger } = require('@src/config/logger');
 
-const { Models } = require('../../config/Models');
-const { Services } = require('../../config/Services');
+const { Models } = require('@src/config/Models');
+const { Services } = require('@src/config/Services');
 
-const {
-  ErrorHandler,
-  // CheckValidIdObject,
-} = require('../../helper/ErrorHandler');
-const {
-  ResponseSchema,
-  PaginateSchema,
-  // PaginateSchema,
-} = require('../../helper/HelperFunctions');
-// const UsersServices = require('./UsersServices');
+const { ErrorHandler } = require('@src/helper/ErrorHandler');
+const { ResponseSchema } = require('@src/helper/HelperFunctions');
+const { LogInfo, LogError } = require('@src/helper/HelperFunctions');
 
 exports.createUser = async (req, res) => {
   try {
     const { first_name, last_name, phone_number, email, password } = req.body;
     const image = req.file;
 
-    logger.info('--------- Start Add User -----------');
+    LogInfo('--------- Start Add User -----------');
     const user = await Models.User.create({
       first_name,
       last_name,
@@ -29,13 +21,13 @@ exports.createUser = async (req, res) => {
       password,
       image: image ? image.filename : null,
     });
-    logger.info('--------- End Add User -----------');
+    LogInfo('--------- End Add User -----------');
     return res
       .status(201)
       .json(ResponseSchema('User Added Successfully', true, user));
   } catch (err) {
     console.log(err);
-    logger.error(`---------- Error On Add User Due To: ${err} -------------`);
+    LogError(`---------- Error On Add User Due To: ${err} -------------`);
     return res
       .status(400)
       .json(
@@ -51,7 +43,6 @@ exports.createUser = async (req, res) => {
 exports.updateUser = async (req, res) => {
   try {
     const token = req?.headers?.authorization?.split(' ')?.[1];
-    // const authedUser = jwt.decode(token);
     const {
       first_name,
       last_name,
@@ -62,7 +53,7 @@ exports.updateUser = async (req, res) => {
     } = req.body;
     const image = req.file;
 
-    logger.info('--------- Start Update User -----------');
+    LogInfo('--------- Start Update User -----------');
     const user = await Models.User.update(
       {
         first_name,
@@ -78,15 +69,13 @@ exports.updateUser = async (req, res) => {
         },
       },
     );
-    logger.info('--------- End Update User -----------');
+    LogInfo('--------- End Update User -----------');
     return res
       .status(201)
       .json(ResponseSchema('User Updated Successfully', true, user));
   } catch (err) {
     console.log(err);
-    logger.error(
-      `---------- Error On Update User Due To: ${err} -------------`,
-    );
+    LogError(`---------- Error On Update User Due To: ${err} -------------`);
     return res
       .status(400)
       .json(
@@ -102,23 +91,23 @@ exports.updateUser = async (req, res) => {
 exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    logger.info('--------- Start Login -----------');
+    LogInfo('--------- Start Login -----------');
     const user = await Models.User.scope('password').findOne({
       where: { email },
     });
     const comparePassword = await user?.comparePassword(password);
     if (comparePassword) {
       const token = await user?.generateJWTToken();
-      logger.info('--------- End Login -----------');
+      LogInfo('--------- End Login -----------');
       return res
         .status(201)
         .json(ResponseSchema('User Logged Successfully', true, token));
     }
-    logger.info('--------- End Login -----------');
+    LogInfo('--------- End Login -----------');
     return res.status(400).json(ResponseSchema(`Wrong Credentials`, false));
   } catch (err) {
     console.log(err);
-    logger.error(`---------- Error On Login Due To: ${err} -------------`);
+    LogError(`---------- Error On Login Due To: ${err} -------------`);
     return res
       .status(400)
       .json(
@@ -136,33 +125,31 @@ exports.getAllUsers = async (req, res) => {
     const { name } = req.query;
     const query = {};
     if (name) query.name = name;
-    logger.info('--------- Start Get All Users -----------');
+    LogInfo('--------- Start Get All Users -----------');
     const sendedObject = await Services?.Users?.getAllUsers(req);
 
-    logger.info('--------- End Get All Users Successfully -----------');
+    LogInfo('--------- End Get All Users Successfully -----------');
     return res.status(201).json(ResponseSchema('Users', true, sendedObject));
   } catch (err) {
     console.log(err);
-    logger.error(`---------- Error On Users File Due To: ${err} -------------`);
-    return res.status(400).json(
-      ResponseSchema(
-        `Somethings Went wrong Due To :${err.message}`,
-        false,
-        // ErrorHandler(err),
-      ),
-    );
+    LogError(`---------- Error On Users File Due To: ${err} -------------`);
+    return res
+      .status(400)
+      .json(
+        ResponseSchema(`Somethings Went wrong Due To :${err.message}`, false),
+      );
   }
 };
 
 exports.getUser = async (req, res) => {
   try {
-    logger.info('--------- Start Get User -----------');
+    LogInfo('--------- Start Get User -----------');
     const sendedObject = await Services?.Users?.getUser(req);
-    logger.info('--------- End Get User Successfully -----------');
+    LogInfo('--------- End Get User Successfully -----------');
     return res.status(201).json(ResponseSchema('User', true, sendedObject));
   } catch (err) {
     console.log(err);
-    logger.error(`---------- Error On User Due To: ${err} -------------`);
+    LogError(`---------- Error On User Due To: ${err} -------------`);
     return res
       .status(400)
       .json(
@@ -174,39 +161,35 @@ exports.getUser = async (req, res) => {
 exports.getAllUsersWithPagination = async (req, res) => {
   try {
     const sendedObject = await Services?.Users?.getAllUsersWithPagination(req);
-    logger.info('--------- End Get All Users Successfully -----------');
+    LogInfo('--------- End Get All Users Successfully -----------');
     return res.status(201).json(ResponseSchema('Users', true, sendedObject));
   } catch (err) {
     console.log(err);
-    logger.error(`---------- Error On Users File Due To: ${err} -------------`);
-    return res.status(400).json(
-      ResponseSchema(
-        `Somethings Went wrong Due To :${err.message}`,
-        false,
-        // ErrorHandler(err),
-      ),
-    );
+    LogError(`---------- Error On Users File Due To: ${err} -------------`);
+    return res
+      .status(400)
+      .json(
+        ResponseSchema(`Somethings Went wrong Due To :${err.message}`, false),
+      );
   }
 };
 
 exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
-    logger.info('--------- Start Delete User -----------');
+    LogInfo('--------- Start Delete User -----------');
     await Models.User.destroy({
       where: {
         id,
       },
     });
-    logger.info('--------- End Delete User -----------');
+    LogInfo('--------- End Delete User -----------');
     return res
       .status(201)
       .json(ResponseSchema('User Deleted Successfully', true));
   } catch (err) {
     console.log(err);
-    logger.error(
-      `---------- Error On Delete User Due To: ${err} -------------`,
-    );
+    LogError(`---------- Error On Delete User Due To: ${err} -------------`);
     return res
       .status(400)
       .json(
@@ -221,15 +204,15 @@ exports.deleteUser = async (req, res) => {
 
 exports.addStory = async (req, res) => {
   try {
-    logger.info('--------- Start Add Story -----------');
+    LogInfo('--------- Start Add Story -----------');
     const story = await Services?.Users?.addStory(req);
-    logger.info('--------- End Add Story -----------');
+    LogInfo('--------- End Add Story -----------');
     return res
       .status(201)
       .json(ResponseSchema('Story Added Successfully', true, story));
   } catch (err) {
     console.log(err);
-    logger.error(`---------- Error On Add Story Due To: ${err} -------------`);
+    LogError(`---------- Error On Add Story Due To: ${err} -------------`);
     return res
       .status(400)
       .json(

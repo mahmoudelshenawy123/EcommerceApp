@@ -1,20 +1,11 @@
 const { Op } = require('sequelize');
-const jwt = require('jsonwebtoken');
-const { logger } = require('../../config/logger');
+const { LogInfo, LogError } = require('@src/helper/HelperFunctions');
 
-const { Models } = require('../../config/Models');
-const { Services } = require('../../config/Services');
+const { Models } = require('@src/config/Models');
+const { Services } = require('@src/config/Services');
 
-const {
-  ErrorHandler,
-  // CheckValidIdObject,
-} = require('../../helper/ErrorHandler');
-const {
-  ResponseSchema,
-  PaginateSchema,
-  // PaginateSchema,
-} = require('../../helper/HelperFunctions');
-// const UsersServices = require('./UsersServices');
+const { ErrorHandler } = require('@src/helper/ErrorHandler');
+const { ResponseSchema } = require('@src/helper/HelperFunctions');
 
 exports.createProvider = async (req, res) => {
   try {
@@ -30,7 +21,7 @@ exports.createProvider = async (req, res) => {
     } = req.body;
     const { main_image, images } = req.files;
 
-    logger.info('--------- Start Add Provider -----------');
+    LogInfo('--------- Start Add Provider -----------');
     const provider = await Models.Providers.create({
       first_name,
       last_name,
@@ -51,15 +42,13 @@ exports.createProvider = async (req, res) => {
       where: query,
     });
     await provider.addCategories(categoriesItems);
-    logger.info('--------- End Add Provider -----------');
+    LogInfo('--------- End Add Provider -----------');
     return res
       .status(201)
       .json(ResponseSchema('Provider Added Successfully', true, provider));
   } catch (err) {
     console.log(err);
-    logger.error(
-      `---------- Error On Add Provider Due To: ${err} -------------`,
-    );
+    LogError(`---------- Error On Add Provider Due To: ${err} -------------`);
     return res
       .status(400)
       .json(
@@ -75,7 +64,6 @@ exports.createProvider = async (req, res) => {
 exports.updateProvider = async (req, res) => {
   try {
     const token = req?.headers?.authorization?.split(' ')?.[1];
-    // const authedUser = jwt.decode(token);
     const {
       first_name,
       last_name,
@@ -88,7 +76,7 @@ exports.updateProvider = async (req, res) => {
     } = req.body;
     const image = req.file;
 
-    logger.info('--------- Start Update Provider -----------');
+    LogInfo('--------- Start Update Provider -----------');
     const provider = await Models.Providers.update(
       {
         first_name,
@@ -106,13 +94,13 @@ exports.updateProvider = async (req, res) => {
         },
       },
     );
-    logger.info('--------- End Update Provider -----------');
+    LogInfo('--------- End Update Provider -----------');
     return res
       .status(201)
       .json(ResponseSchema('Provider Updated Successfully', true, provider));
   } catch (err) {
     console.log(err);
-    logger.error(
+    LogError(
       `---------- Error On Update Provider Due To: ${err} -------------`,
     );
     return res
@@ -130,23 +118,23 @@ exports.updateProvider = async (req, res) => {
 exports.loginProvider = async (req, res) => {
   try {
     const { email, password } = req.body;
-    logger.info('--------- Start Login -----------');
+    LogInfo('--------- Start Login -----------');
     const provider = await Models.Providers.scope('password').findOne({
       where: { email },
     });
     const comparePassword = await provider?.comparePassword(password);
     if (comparePassword) {
       const token = await provider?.generateJWTToken();
-      logger.info('--------- End Login -----------');
+      LogInfo('--------- End Login -----------');
       return res
         .status(201)
         .json(ResponseSchema('Provider Logged Successfully', true, token));
     }
-    logger.info('--------- End Login -----------');
+    LogInfo('--------- End Login -----------');
     return res.status(400).json(ResponseSchema(`Wrong Credentials`, false));
   } catch (err) {
     console.log(err);
-    logger.error(`---------- Error On Login Due To: ${err} -------------`);
+    LogError(`---------- Error On Login Due To: ${err} -------------`);
     return res
       .status(400)
       .json(
@@ -164,18 +152,16 @@ exports.getAllItems = async (req, res) => {
     const { name } = req.query;
     const query = {};
     if (name) query.name = name;
-    logger.info('--------- Start Get All Providers -----------');
+    LogInfo('--------- Start Get All Providers -----------');
     const sendedObject = await Services?.Providers?.getAllItems(req);
 
-    logger.info('--------- End Get All Providers Successfully -----------');
+    LogInfo('--------- End Get All Providers Successfully -----------');
     return res
       .status(201)
       .json(ResponseSchema('Providers', true, sendedObject));
   } catch (err) {
     console.log(err);
-    logger.error(
-      `---------- Error On Providers File Due To: ${err} -------------`,
-    );
+    LogError(`---------- Error On Providers File Due To: ${err} -------------`);
     return res.status(400).json(
       ResponseSchema(
         `Somethings Went wrong Due To :${err.message}`,
@@ -188,13 +174,13 @@ exports.getAllItems = async (req, res) => {
 
 exports.getSingleItem = async (req, res) => {
   try {
-    logger.info('--------- Start Get Provider -----------');
+    LogInfo('--------- Start Get Provider -----------');
     const sendedObject = await Services?.Providers?.getSingleItem(req);
-    logger.info('--------- End Get Provider Successfully -----------');
+    LogInfo('--------- End Get Provider Successfully -----------');
     return res.status(201).json(ResponseSchema('Provider', true, sendedObject));
   } catch (err) {
     console.log(err);
-    logger.error(`---------- Error On Provider Due To: ${err} -------------`);
+    LogError(`---------- Error On Provider Due To: ${err} -------------`);
     return res
       .status(400)
       .json(
@@ -207,15 +193,13 @@ exports.getAllItemsWithPagination = async (req, res) => {
   try {
     const sendedObject =
       await Services?.Providers?.getAllItemsWithPagination(req);
-    logger.info('--------- End Get All Provider Successfully -----------');
+    LogInfo('--------- End Get All Provider Successfully -----------');
     return res
       .status(201)
       .json(ResponseSchema('Providers', true, sendedObject));
   } catch (err) {
     console.log(err);
-    logger.error(
-      `---------- Error On Providers File Due To: ${err} -------------`,
-    );
+    LogError(`---------- Error On Providers File Due To: ${err} -------------`);
     return res.status(400).json(
       ResponseSchema(
         `Somethings Went wrong Due To :${err.message}`,
@@ -229,19 +213,19 @@ exports.getAllItemsWithPagination = async (req, res) => {
 exports.deleteProvider = async (req, res) => {
   try {
     const { id } = req.params;
-    logger.info('--------- Start Delete Provider -----------');
+    LogInfo('--------- Start Delete Provider -----------');
     await Models.Providers.destroy({
       where: {
         id,
       },
     });
-    logger.info('--------- End Delete Provider -----------');
+    LogInfo('--------- End Delete Provider -----------');
     return res
       .status(201)
       .json(ResponseSchema('Provider Deleted Successfully', true));
   } catch (err) {
     console.log(err);
-    logger.error(
+    LogError(
       `---------- Error On Delete Provider Due To: ${err} -------------`,
     );
     return res
@@ -258,15 +242,15 @@ exports.deleteProvider = async (req, res) => {
 
 exports.addStory = async (req, res) => {
   try {
-    logger.info('--------- Start Add Story -----------');
+    LogInfo('--------- Start Add Story -----------');
     const story = await Services?.Providers?.addStory(req);
-    logger.info('--------- End Add Story -----------');
+    LogInfo('--------- End Add Story -----------');
     return res
       .status(201)
       .json(ResponseSchema('Story Added Successfully', true, story));
   } catch (err) {
     console.log(err);
-    logger.error(`---------- Error On Add Story Due To: ${err} -------------`);
+    LogError(`---------- Error On Add Story Due To: ${err} -------------`);
     return res
       .status(400)
       .json(

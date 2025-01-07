@@ -1,8 +1,6 @@
 const { DataTypes } = require('sequelize');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-const sequelizeDb = require('../../config/PostgresDBConfig');
-const { MergeImageLink } = require('../../helper/HelperFunctions');
+const sequelizeDb = require('@src/config/PostgresDBConfig');
+const { MergeImageLink } = require('@src/helper/HelperFunctions');
 
 const Categories = sequelizeDb.define(
   'Categories',
@@ -32,14 +30,6 @@ const Categories = sequelizeDb.define(
     freezeTableName: true,
   },
 );
-
-// Categories.sync()
-//   .then(() => {
-//     console.log('Categories table created');
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//   });
 
 Categories.prototype.getImageWithBaseUrl = function (req) {
   const { image } = this;

@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
-const sequelizeDb = require('../../config/PostgresDBConfig');
-const { MergeImageLink } = require('../../helper/HelperFunctions');
+const sequelizeDb = require('@src/config/PostgresDBConfig');
+const { MergeImageLink } = require('@src/helper/HelperFunctions');
 
 const Products = sequelizeDb.define(
   'Products',
@@ -43,14 +43,6 @@ const Products = sequelizeDb.define(
     freezeTableName: true,
   },
 );
-
-// Products.sync()
-//   .then(() => {
-//     console.log('Products table created');
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//   });
 
 Products.prototype.getMainImageWithBaseUrl = function (req) {
   const { main_image } = this;

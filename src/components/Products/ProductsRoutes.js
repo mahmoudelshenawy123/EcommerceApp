@@ -2,17 +2,14 @@ const express = require('express');
 
 const router = express.Router();
 const multer = require('multer');
-const CategoriesController = require('./ProductsController');
 const {
   validateRequest,
   ResponseSchema,
-} = require('../../helper/HelperFunctions');
+} = require('@src/helper/HelperFunctions');
+const authJwt = require('@src/middleware/auth');
+const { checkisUserAdmin } = require('@src/middleware/authMiddlewares');
+const CategoriesController = require('./ProductsController');
 const CategoriesValidation = require('./ProductsValidation');
-const authJwt = require('../../middleware/auth');
-const {
-  checkisUserAdmin,
-  checkisUser,
-} = require('../../middleware/authMiddlewares');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -25,23 +22,12 @@ const storage = multer.diskStorage({
   },
 });
 
-// const upload = multer({
-//   storage,
-// }).fields([
-//   { name: 'images', maxCount: 6 },
-//   { name: 'image', maxCount: 1 },
-// ]);
-
 const upload = multer({
   storage,
 }).fields([
   { name: 'images', maxCount: 10 },
   { name: 'main_image', maxCount: 1 },
 ]);
-// const upload = multer({
-//   storage,
-// }).single('image');
-
 function uploadModififed(req, res, next) {
   upload(req, res, (err) => {
     if (err) {

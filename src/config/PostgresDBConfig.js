@@ -1,23 +1,24 @@
 const { Sequelize } = require('sequelize');
+const { LogInfo, LogError } = require('@src/helper/HelperFunctions');
+const { sql } = require('./Keys');
 
 const sequelize = new Sequelize({
-  database: 'movies',
-  username: 'postgres',
-  password: '123456',
-  host: 'localhost',
+  database: sql?.database,
+  username: sql?.username,
+  password: sql?.password,
+  host: sql?.host,
   dialect: 'postgres',
   logging: console.log,
 });
-const { logger } = require('./logger');
 
 const PostgresDBConfig = () => {
   sequelize
     .authenticate()
     .then(() => {
-      logger.info('Connected to Postgres...');
+      LogInfo('Connected to Postgres...');
     })
     .catch((err) => {
-      logger.error(
+      LogError(
         `Could not connect to Postgres, exiting the application Due to: ${err}`,
       );
       process.exit();

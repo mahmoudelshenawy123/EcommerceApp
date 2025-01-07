@@ -1,8 +1,8 @@
 const { DataTypes } = require('sequelize');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const sequelizeDb = require('../../config/PostgresDBConfig');
-const { MergeImageLink } = require('../../helper/HelperFunctions');
+const sequelizeDb = require('@src/config/PostgresDBConfig');
+const { MergeImageLink } = require('@src/helper/HelperFunctions');
 
 const AdminUsers = sequelizeDb.define(
   'AdminUsers',
@@ -58,7 +58,7 @@ const AdminUsers = sequelizeDb.define(
       attributes: { exclude: ['password'] },
     },
     scopes: {
-      password: { attributes: {} }, // Use this scope to include password explicitly
+      password: { attributes: {} },
     },
   },
 );

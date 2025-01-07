@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelizeDb = require('../../config/PostgresDBConfig');
+const sequelizeDb = require('@src/config/PostgresDBConfig');
 
 const OrderProducts = sequelizeDb.define(
   'OrderProducts',
@@ -29,22 +29,5 @@ const OrderProducts = sequelizeDb.define(
     freezeTableName: true,
   },
 );
-
-// OrderProducts.sync()
-//   .then(() => {
-//     console.log('OrderProducts table created');
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//   });
-
-// OrderProducts.prototype.getMainImageWithBaseUrl = function (req) {
-//   const { main_image } = this;
-//   return main_image ? MergeImageLink(req, main_image) : null;
-// };
-// OrderProducts.prototype.getImagesWithBaseUrl = function (req) {
-//   const { images } = this;
-//   return images ? images?.map((image) => MergeImageLink(req, image)) : null;
-// };
 
 module.exports.OrderProducts = OrderProducts;

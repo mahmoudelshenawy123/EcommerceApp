@@ -1,42 +1,29 @@
-const jwt = require('jsonwebtoken');
-const { logger } = require('../../config/logger');
-
-const { Models } = require('../../config/Models');
-
-const {
-  ErrorHandler,
-  // CheckValidIdObject,
-} = require('../../helper/ErrorHandler');
-const {
-  ResponseSchema,
-  PaginateSchema,
-  // PaginateSchema,
-} = require('../../helper/HelperFunctions');
-const { Services } = require('../../config/Services');
+const { LogInfo, LogError } = require('@src/helper/HelperFunctions');
+const { Models } = require('@src/config/Models');
+const { Services } = require('@src/config/Services');
+const { ErrorHandler } = require('@src/helper/ErrorHandler');
+const { ResponseSchema } = require('@src/helper/HelperFunctions');
 
 exports.createUser = async (req, res) => {
   try {
-    const { first_name, last_name, phone_number, email, password } = req.body;
+    const { first_name, last_name, email, password } = req.body;
     const image = req.file;
 
-    logger.info('--------- Start Add Admin User -----------');
+    LogInfo('--------- Start Add Admin User -----------');
     const user = await Models.AdminUsers.create({
       first_name,
       last_name,
-      phone_number,
       email,
       password,
       image: image ? image.filename : null,
     });
-    logger.info('--------- End Add Admin User -----------');
+    LogInfo('--------- End Add Admin User -----------');
     return res
       .status(201)
       .json(ResponseSchema('Admin User Added Successfully', true, user));
   } catch (err) {
     console.log(err);
-    logger.error(
-      `---------- Error On Add Admin User Due To: ${err} -------------`,
-    );
+    LogError(`---------- Error On Add Admin User Due To: ${err} -------------`);
     return res
       .status(400)
       .json(
@@ -55,19 +42,17 @@ exports.updateUser = async (req, res) => {
     const {
       first_name,
       last_name,
-      phone_number,
       email,
       image: imageLink,
       password,
     } = req.body;
     const image = req.file;
 
-    logger.info('--------- Start Update Admin User -----------');
+    LogInfo('--------- Start Update Admin User -----------');
     const user = await Models.AdminUsers.update(
       {
         first_name,
         last_name,
-        phone_number,
         email,
         password,
         image: image ? image.filename : imageLink,
@@ -78,13 +63,13 @@ exports.updateUser = async (req, res) => {
         },
       },
     );
-    logger.info('--------- End Update Admin User -----------');
+    LogInfo('--------- End Update Admin User -----------');
     return res
       .status(201)
       .json(ResponseSchema('Admin User Updated Successfully', true, user));
   } catch (err) {
     console.log(err);
-    logger.error(
+    LogError(
       `---------- Error On Update Admin User Due To: ${err} -------------`,
     );
     return res
@@ -102,23 +87,23 @@ exports.updateUser = async (req, res) => {
 exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    logger.info('--------- Start Login -----------');
+    LogInfo('--------- Start Login -----------');
     const user = await Models.AdminUsers.scope('password').findOne({
       where: { email },
     });
     const comparePassword = await user?.comparePassword(password);
     if (comparePassword) {
       const token = await user?.generateJWTToken();
-      logger.info('--------- End Login -----------');
+      LogInfo('--------- End Login -----------');
       return res
         .status(201)
         .json(ResponseSchema('Admin User Logged Successfully', true, token));
     }
-    logger.info('--------- End Login -----------');
+    LogInfo('--------- End Login -----------');
     return res.status(400).json(ResponseSchema(`Wrong Credentials`, false));
   } catch (err) {
     console.log(err);
-    logger.error(`---------- Error On Login Due To: ${err} -------------`);
+    LogError(`---------- Error On Login Due To: ${err} -------------`);
     return res
       .status(400)
       .json(
@@ -136,10 +121,10 @@ exports.getAllUsers = async (req, res) => {
     const { name } = req.query;
     const query = {};
     if (name) query.name = name;
-    logger.info('--------- Start Get All Admin Users -----------');
+    LogInfo('--------- Start Get All Admin Users -----------');
     const sendedObject = await Services?.AdminUsers?.getAllUsers(req);
 
-    logger.info('--------- End Get All Admin Users Successfully -----------');
+    LogInfo('--------- End Get All Admin Users Successfully -----------');
     return res
       .status(201)
       .json(
@@ -147,7 +132,7 @@ exports.getAllUsers = async (req, res) => {
       );
   } catch (err) {
     console.log(err);
-    logger.error(
+    LogError(
       `---------- Error On Admin Users File Due To: ${err} -------------`,
     );
     return res.status(400).json(
@@ -162,15 +147,15 @@ exports.getAllUsers = async (req, res) => {
 
 exports.getUser = async (req, res) => {
   try {
-    logger.info('--------- Start Get Admin User -----------');
+    LogInfo('--------- Start Get Admin User -----------');
     const sendedObject = await Services?.AdminUsers?.getUser(req);
-    logger.info('--------- End Get Admin User Successfully -----------');
+    LogInfo('--------- End Get Admin User Successfully -----------');
     return res
       .status(201)
       .json(ResponseSchema('Admin User', true, sendedObject));
   } catch (err) {
     console.log(err);
-    logger.error(`---------- Error On Admin User Due To: ${err} -------------`);
+    LogError(`---------- Error On Admin User Due To: ${err} -------------`);
     return res
       .status(400)
       .json(
@@ -183,7 +168,7 @@ exports.getAllUsersWithPagination = async (req, res) => {
   try {
     const sendedObject =
       await Services?.AdminUsers?.getAllUsersWithPagination(req);
-    logger.info('--------- End Get All Admin Users Successfully -----------');
+    LogInfo('--------- End Get All Admin Users Successfully -----------');
     return res
       .status(201)
       .json(
@@ -191,7 +176,7 @@ exports.getAllUsersWithPagination = async (req, res) => {
       );
   } catch (err) {
     console.log(err);
-    logger.error(
+    LogError(
       `---------- Error On Admin Users File Due To: ${err} -------------`,
     );
     return res.status(400).json(
@@ -207,44 +192,21 @@ exports.getAllUsersWithPagination = async (req, res) => {
 exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
-    logger.info('--------- Start Delete Admin User -----------');
+    LogInfo('--------- Start Delete Admin User -----------');
     await Models.AdminUsers.destroy({
       where: {
         id,
       },
     });
-    logger.info('--------- End Delete Admin User -----------');
+    LogInfo('--------- End Delete Admin User -----------');
     return res
       .status(201)
       .json(ResponseSchema('Admin User Deleted Successfully', true));
   } catch (err) {
     console.log(err);
-    logger.error(
+    LogError(
       `---------- Error On Delete Admin User Due To: ${err} -------------`,
     );
-    return res
-      .status(400)
-      .json(
-        ResponseSchema(
-          `Somethings Went wrong Due To :${err.message}`,
-          false,
-          ErrorHandler(err),
-        ),
-      );
-  }
-};
-
-exports.addStory = async (req, res) => {
-  try {
-    logger.info('--------- Start Add Story -----------');
-    const story = await Services?.AdminUsers?.addStory(req);
-    logger.info('--------- End Add Story -----------');
-    return res
-      .status(201)
-      .json(ResponseSchema('Story Added Successfully', true, story));
-  } catch (err) {
-    console.log(err);
-    logger.error(`---------- Error On Add Story Due To: ${err} -------------`);
     return res
       .status(400)
       .json(

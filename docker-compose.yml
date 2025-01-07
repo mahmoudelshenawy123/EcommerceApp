@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongodb_data:/data/db
+
+  ecommerapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ecommerapp
+    depends_on:
+      - mongodb
+    env_file:
+      - .env.docker 
+    environment:
+      - PORT=5555
+    ports:
+      - '5555:5555'
+
+volumes:
+  mongodb_data:

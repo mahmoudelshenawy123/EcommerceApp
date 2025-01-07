@@ -1,8 +1,8 @@
 const { DataTypes } = require('sequelize');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const sequelizeDb = require('../../config/PostgresDBConfig');
-const { MergeImageLink } = require('../../helper/HelperFunctions');
+const sequelizeDb = require('@src/config/PostgresDBConfig');
+const { MergeImageLink } = require('@src/helper/HelperFunctions');
 
 const User = sequelizeDb.define(
   'User',
@@ -62,18 +62,10 @@ const User = sequelizeDb.define(
       attributes: { exclude: ['password'] },
     },
     scopes: {
-      password: { attributes: {} }, // Use this scope to include password explicitly
+      password: { attributes: {} },
     },
   },
 );
-
-// User.sync()
-//   .then(() => {
-//     console.log('User table created');
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//   });
 
 User.prototype.getImageWithBaseUrl = function (req) {
   const { image } = this;

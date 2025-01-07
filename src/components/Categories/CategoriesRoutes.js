@@ -2,17 +2,14 @@ const express = require('express');
 
 const router = express.Router();
 const multer = require('multer');
-const CategoriesController = require('./CategoriesController');
 const {
   validateRequest,
   ResponseSchema,
-} = require('../../helper/HelperFunctions');
+} = require('@src/helper/HelperFunctions');
+const authJwt = require('@src/middleware/auth');
+const { checkisUserAdmin } = require('@src/middleware/authMiddlewares');
+const CategoriesController = require('./CategoriesController');
 const CategoriesValidation = require('./CategoriesValidation');
-const authJwt = require('../../middleware/auth');
-const {
-  checkisUserAdmin,
-  checkisUser,
-} = require('../../middleware/authMiddlewares');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -20,17 +17,10 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const savedFileName = `${file.fieldname}-category-${Date.now()}-${Math.round(Math.random() * 1e9)}-${file.originalname}`;
-
     cb(null, savedFileName);
   },
 });
 
-// const upload = multer({
-//   storage,
-// }).fields([
-//   { name: 'images', maxCount: 6 },
-//   { name: 'image', maxCount: 1 },
-// ]);
 const upload = multer({
   storage,
 }).single('image');

@@ -2,14 +2,14 @@ const express = require('express');
 
 const router = express.Router();
 const multer = require('multer');
-const AdminUsersController = require('./AdminUsersController');
 const {
   validateRequest,
   ResponseSchema,
-} = require('../../helper/HelperFunctions');
+} = require('@src/helper/HelperFunctions');
+const authJwt = require('@src/middleware/auth');
+const { checkisUserAdmin } = require('@src/middleware/authMiddlewares');
+const AdminUsersController = require('./AdminUsersController');
 const AdminUsersValidation = require('./AdminUsersValidation');
-const authJwt = require('../../middleware/auth');
-const { checkisUserAdmin } = require('../../middleware/authMiddlewares');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -17,17 +17,10 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const savedFileName = `${file.fieldname}-user-${Date.now()}-${Math.round(Math.random() * 1e9)}-${file.originalname}`;
-
     cb(null, savedFileName);
   },
 });
 
-// const upload = multer({
-//   storage,
-// }).fields([
-//   { name: 'images', maxCount: 6 },
-//   { name: 'image', maxCount: 1 },
-// ]);
 const upload = multer({
   storage,
 }).single('image');
@@ -44,23 +37,6 @@ function uploadModififed(req, res, next) {
     return next();
   });
 }
-const uploadStory = multer({
-  storage,
-}).single('story_image');
-
-function uploadModififedStoryImage(req, res, next) {
-  uploadStory(req, res, (err) => {
-    if (err) {
-      return res.status(400).json(
-        ResponseSchema(err?.message, false, {
-          error: `invalid_file:${err}`,
-        }),
-      );
-    }
-    return next();
-  });
-}
-
 router.post(
   '/login',
   multer().none(),

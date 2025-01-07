@@ -17,9 +17,9 @@ module.exports = async (Models) => {
   });
   Models.Providers.belongsToMany(Models.Categories, {
     through: 'ProviderCategories',
-    foreignKey: 'providerId', // Ensure this is correct
-    otherKey: 'categoryId', // Ensure this is correct
-    as: 'categories', // Ensure the alias matches in usage
+    foreignKey: 'providerId',
+    otherKey: 'categoryId',
+    as: 'categories',
   });
   await Models.Providers.sync({ alter: true });
   await Models.ProvidersStories.sync({ alter: true });
