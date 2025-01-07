@@ -7,6 +7,10 @@ module.exports = async (Models) => {
     foreignKey: 'user_id',
     as: 'user',
   });
+  Models.User.belongsTo(Models.Orders, {
+    foreignKey: 'user_id',
+    as: 'user',
+  });
   await Models.User.sync({ alter: true });
   await Models.Stories.sync({ alter: true });
 };

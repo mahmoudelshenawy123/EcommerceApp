@@ -11,6 +11,10 @@ module.exports = async (Models) => {
     foreignKey: 'provider_id',
     as: 'products',
   });
+  Models.Providers.belongsTo(Models.Orders, {
+    foreignKey: 'provider_id',
+    as: 'provider',
+  });
   Models.Providers.belongsToMany(Models.Categories, {
     through: 'ProviderCategories',
     foreignKey: 'providerId', // Ensure this is correct
