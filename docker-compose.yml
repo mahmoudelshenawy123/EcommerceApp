@@ -4,14 +4,16 @@ services:
   postgres:
     image: postgres:latest
     container_name: postgres
+    env_file:
+      - .env.docker
+    environment:
+      - SQL_DATABASE=${SQL_DATABASE}
+      - SQL_USERNAME=${SQL_USERNAME}
+      - SQL_PASSWORD=${SQL_PASSWORD}
     ports:
       - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
-      POSTGRES_DB: movies
 
   ecommerapp:
     build:
@@ -24,6 +26,7 @@ services:
       - .env.docker
     environment:
       - PORT=5555
+      - DATABASE_URL=postgresql://${SQL_USERNAME}:${SQL_PASSWORD}@postgres:5432/${SQL_DATABASE}
     ports:
       - '5555:5555'
 

@@ -1,5 +1,5 @@
 # Use the official Node.js image as a base
-FROM node:16
+FROM node:18-alpine
 
 # Set the working directory inside the container
 WORKDIR /usr/src/app
@@ -20,4 +20,4 @@ COPY . .
 EXPOSE 5555
 
 # Command to run your app using nodemon
-CMD ["npm", "start"]
+CMD ["npm run dev"]
