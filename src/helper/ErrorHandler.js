@@ -1,6 +1,5 @@
 // src/helper/errorHandler.js
 
-const { default: mongoose } = require('mongoose');
 const { ResponseSchema, LogError } = require('./HelperFunctions');
 
 const ErrorHandler = (err) => {
@@ -14,14 +13,6 @@ const ErrorHandler = (err) => {
     errors.push({ email: 'Email already exists' });
   }
   return errors;
-};
-
-const CheckValidIdObject = (req, res, id, message = '') => {
-  if (!mongoose.isValidObjectId(id)) {
-    res.status(400).json(ResponseSchema(message, false));
-    return false;
-  }
-  return true;
 };
 
 // Error handler middleware for handling unhandled errors during production
@@ -72,7 +63,6 @@ const developmentErrorHandler = (err, req, res, next) => {
 
 module.exports = {
   checkAuthorization,
-  CheckValidIdObject,
   ErrorHandler,
   developmentErrorHandler,
   productionErrorHandler,
