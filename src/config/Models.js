@@ -13,6 +13,7 @@ const loadModelsFromDirectory = (dirPath) => {
     } else if (file.endsWith('Model.js')) {
       const model = require(fullPath);
       const modelName = Object.keys(model)[0];
+      model[modelName]?.sync();
       Models[modelName] = model[modelName];
     }
   });
