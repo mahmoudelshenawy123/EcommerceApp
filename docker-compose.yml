@@ -1,13 +1,17 @@
 version: '3.8'
 
 services:
-  mongodb:
-    image: mongo:latest
-    container_name: mongodb
+  postgres:
+    image: postgres:latest
+    container_name: postgres
     ports:
-      - '27017:27017'
+      - '5432:5432'
     volumes:
-      - mongodb_data:/data/db
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: movies
 
   ecommerapp:
     build:
@@ -15,13 +19,13 @@ services:
       dockerfile: Dockerfile
     container_name: ecommerapp
     depends_on:
-      - mongodb
+      - postgres
     env_file:
-      - .env.docker 
+      - .env.docker
     environment:
       - PORT=5555
     ports:
       - '5555:5555'
 
 volumes:
-  mongodb_data:
+  postgres_data:
